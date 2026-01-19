@@ -1,0 +1,14 @@
+.bg-gradient {
+  background: linear-gradient(120deg, #6a11cb, #2575fc);
+}
+
+.error {
+  color: red;
+  font-size: 13px;
+}
+
+@media (max-width: 768px) {
+  .card {
+    width: 100%;
+  }
+}
