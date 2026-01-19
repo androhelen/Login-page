@@ -1,9 +1,10 @@
-function toggle(id) {
-  const field = document.getElementById(id);
-  field.type = field.type === "password" ? "text" : "password";
+// SHOW / HIDE PASSWORD
+function togglePassword(id) {
+  const input = document.getElementById(id);
+  input.type = input.type === "password" ? "text" : "password";
 }
 
-/* ---------- SIGNUP ---------- */
+// SIGNUP
 const signupForm = document.getElementById("signupForm");
 
 if (signupForm) {
@@ -12,101 +13,76 @@ if (signupForm) {
 
     let valid = true;
 
-    const name = nameField();
-    const email = emailField();
-    const phone = phoneField();
-    const city = cityField();
-    const pass = passwordField();
-    const confirm = confirmField(pass);
+    const name = nameInput();
+    const email = emailInput();
+    const password = passwordInput();
+    const confirm = confirmInput(password);
 
-    if (name && email && phone && city && pass && confirm) {
-      localStorage.setItem("user", JSON.stringify({
-        name,
-        email,
-        phone,
-        city,
-        pass
-      }));
-      alert("Signup Successful!");
+    if (valid) {
+      localStorage.setItem("user", JSON.stringify({ name, email, password }));
+      alert("Signup successful!");
       window.location.href = "index.html";
+    }
+
+    function nameInput() {
+      const val = document.getElementById("name").value;
+      document.getElementById("nameError").innerText = val ? "" : "Name required";
+      if (!val) valid = false;
+      return val;
+    }
+
+    function emailInput() {
+      const val = document.getElementById("email").value;
+      document.getElementById("emailError").innerText =
+        /^[^ ]+@[^ ]+\.[a-z]{2,3}$/.test(val) ? "" : "Invalid email";
+      if (!/^[^ ]+@[^ ]+\.[a-z]{2,3}$/.test(val)) valid = false;
+      return val;
+    }
+
+    function passwordInput() {
+      const val = document.getElementById("password").value;
+      document.getElementById("passwordError").innerText =
+        val.length >= 8 ? "" : "Min 8 characters";
+      if (val.length < 8) valid = false;
+      return val;
+    }
+
+    function confirmInput(pass) {
+      const val = document.getElementById("confirm").value;
+      document.getElementById("confirmError").innerText =
+        val === pass ? "" : "Passwords do not match";
+      if (val !== pass) valid = false;
+      return val;
     }
   });
 }
 
-function nameField() {
-  const v = name.value.trim();
-  if (!/^[A-Za-z ]+$/.test(v)) {
-    nameError.textContent = "Only alphabets allowed";
-    return false;
-  }
-  nameError.textContent = "";
-  return v;
-}
-
-function emailField() {
-  if (!/^\S+@\S+\.\S+$/.test(email.value)) {
-    emailError.textContent = "Invalid email format";
-    return false;
-  }
-  emailError.textContent = "";
-  return email.value;
-}
-
-function phoneField() {
-  if (!/^\d{10}$/.test(phone.value)) {
-    phoneError.textContent = "Enter 10 digit number";
-    return false;
-  }
-  phoneError.textContent = "";
-  return phone.value;
-}
-
-function cityField() {
-  if (!/^[A-Za-z ]+$/.test(city.value)) {
-    cityError.textContent = "Only alphabets allowed";
-    return false;
-  }
-  cityError.textContent = "";
-  return city.value;
-}
-
-function passwordField() {
-  if (!/^(?=.*[A-Za-z])(?=.*\d).{8,}$/.test(password.value)) {
-    passwordError.textContent = "Min 8 chars with letters & numbers";
-    return false;
-  }
-  passwordError.textContent = "";
-  return password.value;
-}
-
-function confirmField(pass) {
-  if (confirmPassword.value !== pass) {
-    confirmError.textContent = "Passwords do not match";
-    return false;
-  }
-  confirmError.textContent = "";
-  return true;
-}
-
-/* ---------- SIGNIN ---------- */
+// SIGNIN
 const signinForm = document.getElementById("signinForm");
 
 if (signinForm) {
   signinForm.addEventListener("submit", function (e) {
     e.preventDefault();
 
-    const saved = JSON.parse(localStorage.getItem("user"));
+    const email = document.getElementById("loginEmail").value;
+    const password = document.getElementById("loginPassword").value;
 
-    if (
-      saved &&
-      loginEmail.value === saved.email &&
-      loginPassword.value === saved.pass
-    ) {
-      alert("Login Successful!");
-      // Redirect to Tourist Landing Page
-      // window.location.href = "tourist.html";
+    const user = JSON.parse(localStorage.getItem("user"));
+
+    if (!user) {
+      alert("No account found. Please sign up.");
+      return;
+    }
+
+    if (email === user.email && password === user.password) {
+      window.location.href = "landing.html";
     } else {
-      alert("Invalid login credentials");
+      alert("Invalid login details");
     }
   });
+}
+
+// LOGOUT
+function logout() {
+  window.location.href = "index.html";
 }
